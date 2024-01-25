@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/document.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/brands.min.css">
+    <link rel="stylesheet" href="/css/solid.min.css">
+    <link rel="stylesheet" href="/css/chosen.min.css">
+    <title>ЭХД ПД</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="blocks/header::header"></header>
+    <div class="row row-cols-7 mt-3">
+        <div class="col px-0 d-flex justify-content-between">
+            <div class="justify-content-start">
+                <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#personAdd"><i
+                        class="fa-solid fa-id-card me-2"></i>Добавить документ
+                </button>
+                <a type="button" th:href="'/download/all/' + ${personCase.id}" class="btn btn-success mb-3"><i
+                        class="fa-solid fa-angles-down me-2"></i>Скачать все
+                </a>
+            </div>
+            <div>
+                <a href="/" class="btn btn-success mb-3" type="button">
+                    <i class="fa-solid fa-circle-arrow-left"></i>
+                    К списку дел
+                </a>
+                <button class="btn btn-warning mb-3" onclick="self.close()">
+                    <i class="fa-solid fa-circle-xmark me-2"></i>Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body" th:each="person:${personCase}">
+                    <h5 class="card-title"
+                        th:text="${person.lastName} + ' ' + ${person.firstName} + ' ' + ${person?.middleName}"></h5>
+                    <p class="card-text" th:text="'GUID: ' + ${person.id}">GUID:
+                        6F9619FF-8B86-D011-B42D-00CF4FC964FF</p>
+                    <p class="card-text" th:text="'СНИЛС: ' + ${person.socialNumber}">СНИЛС: 000-000-000 00</p>
+                    <p class="card-text" th:text="'Дата рождения: ' + ${person.dateOfBirthday}">Дата рождения:
+                        XX.XX.XXXX</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <p class="text-center text-uppercase"><strong>Список документов</strong></p>
+    </div>
+    <div class="row mb-5">
+        <div class="block-header" th:if="${documentMap.get(1L) != null}"
+             onclick="$('#documentTableAdvanceWork').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Заблаговременная работа<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTableAdvanceWork" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(1L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-advance-work" value="Очистить поиск"
+                                                       style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(2L) != null}"
+             onclick="$('#documentTableRequestAccount').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Корректировка ИЛС (по заявлению)<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTableRequestAccount" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(2L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-request-account" value="Очистить поиск"
+                                                       style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(3L) != null}"
+             onclick="$('#documentTableAccountOnTo').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Корректировка ИЛС (по инициативе ТО)<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTableAccountOnTo" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(3L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-account-on-to" value="Очистить поиск"
+                                                       style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(4L) != null}"
+             onclick="$('#documentTableMsk').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    МСК<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTableMsk" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(4L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-msk" value="Очистить поиск"
+                                                       style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(5L) != null}"
+             onclick="$('#documentTablePensionAssignment').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Назначение пенсии<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTablePensionAssignment" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(5L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-pension-assignment" value="Очистить поиск"
+                                                       style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(6L) != null}"
+             onclick="$('#documentTablePensionRecalculation').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Перерасчет пенсии<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTablePensionRecalculation" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(6L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-pension-recalculation"
+                                                       value="Очистить поиск" style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="block-header" th:if="${documentMap.get(7L) != null}"
+             onclick="$('#documentTableThematicVerification').toggleClass('block-hide');">
+            <strong>
+                <div style="display:flex; justify-content:space-between">
+                    Тематическая проверка<i class="fa-solid fa-plus-minus"></i>
+                </div>
+            </strong>
+            <div id="documentTableThematicVerification" class="block-hide">
+                <table class="table table-striped documentTable" style="width:100%">
+                    <thead>
+                    <tr>
+                        <th scope="col">GUID</th>
+                        <th scope="col">Наименование документа</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">ФИО специалиста</th>
+                        <th scope="col">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doc:${documentMap.get(7L)}">
+                        <th class="fw-normal" th:text="${doc?.id}">6F9619FF-8B86-D011-B42D-00CF4FC964FF</th>
+                        <td th:text="${doc?.documentType.name}">Паспорт</td>
+                        <td th:text="${doc?.createDate.toLocalDate()}">Когда-то</td>
+                        <td th:text="${doc?.username}">Кем-то</td>
+                        <td class="text-center col-1">
+                            <div class="btn-group">
+                                <a th:href="'/open/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;">Открыть</a>
+                                <a th:href="'/download/' + ${doc?.id}" type="button" class="btn btn-success btn-sm me-1"
+                                   style="width: 100%;" title="Скачать документ">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <a th:href="'/remove/' + ${doc?.id}" type="button" class="btn btn-danger btn-sm"
+                                   style="width: 100%;" title="Удалить документ"
+                                   th:data-confirm="|Вы действительно хотите удалить файл: ${doc.documentType.name.toLowerCase}?|"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="input">GUID</th>
+                        <th class="input">наименованию документа</th>
+                        <th class="input">дате создания</th>
+                        <th class="input">ФИО специалиста</th>
+                        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                                       id="btn-search-clear-thematic-verification"
+                                                       value="Очистить поиск" style="width: 100%;"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <form class="row" method="post" th:each="person:${personCase}" th:action="'/document/' + ${person.id}"
+          enctype="multipart/form-data">
+        <div class="modal fade" id="personAdd" tabindex="-1" aria-labelledby="addDocument" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addDocument">Добавить документ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center">
+                        <div style="width: 90%">
+                            <div class="row">
+                                <div style="width: 100%; padding: 0;">
+                                    <!--                                     th:field="*{documentType}"-->
+                                    <div>
+                                        <select class="js-chosen chosen-cln" id="documentType" name="documentType"
+                                                data-placeholder="Выберите тип документа..."
+                                                required>
+                                            <option value=""></option>
+                                            <option th:each="el:${documentType}" th:value="${el.id}"
+                                                    th:text="${el.name}"></option>
+                                        </select>
+                                    </div>
+                                    <!--                                    <span class="error" th:if="${#fields.hasErrors('documentType')}">Не выбран тип документа!</span>-->
+                                    <div class="mt-2">
+                                        <select class="js-chosen chosen-cln" id="documentPurpose" name="documentPurpose"
+                                                data-placeholder="Выберите цель обращения..."
+                                                required>
+                                            <option value=""></option>
+                                            <option th:each="el:${appealPurpose}" th:value="${el.id}"
+                                                    th:text="${el.name}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input class="form-control mt-3" type="file" id="formFile" name="uploadFile"
+                                       multiple="multiple" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="btn-modal-exit">
+                            Закрыть
+                        </button>
+                        <button type="submit" class="btn btn-success">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/chosen.jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+        // Настройка выпадающего списка
+        $('.js-chosen').chosen({
+          width: '100%',
+          placeholder_text_single: 'Выберете значение',
+          no_results_text: 'Совпадений не найдено',
+        });
+
+        // Очищаем поля ввода данных при закрытии модального окна
+        $('#btn-modal-exit').on('click', function () {
+            $('#documentType').val('').trigger("chosen:updated");
+            $('#formFile').val('');
+        })
+
+        // Настройка таблицы
+        $(document).ready(function () {
+            $('.documentTable').DataTable({
+                orderFixed: [1, 'desk'],
+                "language": {
+                    "lengthMenu": "Показывать по _MENU_ записей",
+                    "info": "Показано _START_ - _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Нет записей",
+                    "emptyTable": "Нет записей",
+                    "search": "Поиск:",
+                    "paginate": {
+                        "first": "Первая",
+                        "last": "Последняя",
+                        "next": "Следующая",
+                        "previous": "Предыдущая"
+                    }
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+
+                ],
+
+                initComplete: function () {
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+
+        // Добавление в таблицу полей поиска
+        $('.documentTable tfoot .input').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" class="input-search" placeholder="Поиск"  style="box-sizing:border-box;width: 100%"/>');
+        });
+
+        // Очистить поля поиска
+        $('#btn-search-clear-advance-work').on('click', function () {
+          $('#documentTableAdvanceWork tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-request-account').on('click', function () {
+          $('#documentTableRequestAccount tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-account-on-to').on('click', function () {
+          $('#documentTableAccountOnTo tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-msk').on('click', function () {
+          $('#documentTableMsk tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-pension-assignment').on('click', function () {
+          $('#documentTablePensionAssignment tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-pension-recalculation').on('click', function () {
+          $('#documentTablePensionRecalculation tfoot .input-search').val('').change();
+        });
+        $('#btn-search-clear-thematic-verification').on('click', function () {
+          $('#documentTableThematicVerification tfoot .input-search').val('').change();
+        });
+
+
+
+
+
+</script>
+</body>
+</html>

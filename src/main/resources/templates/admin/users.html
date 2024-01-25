@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/brands.min.css">
+  <link rel="stylesheet" href="/css/solid.min.css">
+  <link rel="stylesheet" href="/css/dropdown-menu.css">
+  <title>ЭХД ПД</title>
+</head>
+<body>
+<div class="container mb-5">
+  <header th:replace="blocks/header::header"></header>
+  <div class="row row-cols-7 mt-3 ">
+    <div class="col px-0 d-flex justify-content-between">
+      <div>
+        <a href="/admin/" type="button" class="btn btn-success mb-3"><i
+                class="fa-solid fa-user-tie me-2"></i>Главная
+        </a>
+        <a href="#" type="button" class="btn btn-success mb-3"><i
+                class="fa-solid fa-id-card me-2"></i>Добавить пользователя
+        </a>
+        <a href="#" type="button" class="btn btn-danger mb-3"><i
+                class="fa-solid fa-trash me-2"></i>Удалить
+        </a>
+      </div>
+      <div>
+        <a href="/" class="btn btn-success mb-3" type="button">
+          <i class="fa-solid fa-circle-arrow-left me-1"></i>
+          К списку дел
+        </a>
+        <button class="btn btn-success mb-3" onclick="self.close()">
+          <i class="fa-solid fa-circle-xmark me-2"></i>Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <p class="text-center text-uppercase" style="color: #663300"><strong>Администрирование</strong></p>
+  </div>
+  <div class="row">
+    <p class=""><strong>Специалисты:</strong></p>
+  </div>
+
+  <div class="row">
+    <table id="dataTable" class="table table-striped" style="width:100%">
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Фамилия</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Отчество</th>
+        <th scope="col">Роль</th>
+        <th scope="col">Имя пользователя</th>
+        <th scope="col">Териториальный орган</th>
+        <th scope="col">Структурное подразделение</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="el:${users}">
+        <th class="fw-normal" th:text="${el.id}"></th>
+        <td th:text="${el.lastName}"></td>
+        <td th:text="${el.firstName}"></td>
+        <td th:text="${el.middleName}"></td>
+        <td th:text="${el.role.getName}"></td>
+        <td th:text="${el.username}"></td>
+        <td th:text="${el.location.getName}"></td>
+        <td th:text="${el.structuralDivision.getName}"></td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+<!--        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"-->
+<!--                                       id="btn-search-clear" value="Очистить поиск" style="width: 100%;"></th>-->
+        <th class="input">ID</th>
+        <th class="input">Фамилия</th>
+        <th class="input">Имя</th>
+        <th class="input">Отчество</th>
+        <th class="input">Роль</th>
+        <th class="input">Имя пользователя</th>
+        <th class="input">Териториальный орган</th>
+        <th class="input">Структурное подразделение</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+</div>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap5.min.js"></script>
+
+</body>
+</html>
+
+<script>
+        // Настройка таблицы
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                orderFixed: [0, 'asc'],
+                "language": {
+                    "lengthMenu": "Показывать по _MENU_ записей",
+                    "info": "Показано _START_ - _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Нет записей",
+                    "emptyTable": "Нет записей",
+                    "search": "Поиск:",
+                    "paginate": {
+                        "first": "Первая",
+                        "last": "Последняя",
+                        "next": "Следующая",
+                        "previous": "Предыдущая"
+                    }
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+
+                ],
+
+                initComplete: function () {
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+
+        // Добавление в таблицу полей поиска
+        $('#dataTable tfoot .input').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" class="input-search" placeholder="Поиск"  style="box-sizing:border-box;width: 100%"/>');
+        });
+
+        // Очистить поля поиска
+        $('#btn-search-clear').on('click', function () {
+            $('#dataTable tfoot .input-search').val('').change();
+        })
+
+</script>

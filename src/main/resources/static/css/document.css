@@ -1,0 +1,15 @@
+.block-header {
+    text-decoration: none;
+    border-bottom: 1px solid;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+
+.block-header:hover {
+    color: #198754;
+}
+
+.block-hide {
+    display: none;
+}
