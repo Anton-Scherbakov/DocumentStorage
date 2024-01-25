@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/brands.min.css">
+    <link rel="stylesheet" href="/css/solid.min.css">
+    <title>ЭХД ПД</title>
+</head>
+<body>
+<div class="container mb-5">
+    <header th:replace="blocks/header::header"></header>
+    <div class="row row-cols-7 mt-3">
+        <div class="col px-0">
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#personAdd"><i
+                    class="fa-regular fa-address-book me-2"></i>Добавить дело
+            </button>
+            <a href="/admin/" sec:authorize="hasAuthority('ADMIN')" class="btn btn-success mb-3" type="button"><i
+                    class="fa-solid fa-user-tie me-2"></i>Администрирование</a>
+            <a href="/help/" type="button" target="_blank" class="btn btn-success mb-3"><i
+                    class="fa-solid fa-circle-question me-2"></i>Помощь</a>
+        </div>
+    </div>
+    <div class="row">
+        <p class="text-center text-uppercase"><strong>Список дел</strong></p>
+    </div>
+    <div class="row">
+        <table id="dataTable" class="table table-striped" style="width:100%">
+            <thead>
+            <tr>
+                <th scope="col">GUID</th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">СНИЛС</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Дата рождения</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Дополнительно</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="el:${personCase}">
+                <th class="fw-normal" th:text="${el.id}"></th>
+                <td th:text="${el.createDate}"></td>
+                <td th:text="${el.socialNumber}"></td>
+                <td th:text="${el.lastName}"></td>
+                <td th:text="${el.firstName}"></td>
+                <td th:text="${el.middleName}"></td>
+                <td th:text="${el.dateOfBirthday}"></td>
+                <td th:text="${el.status.name}"></td>
+                <td class="text-center col-1">
+                    <div class="btn-group">
+                        <a th:href="'/document/' + ${el.id}" type="button" target="_blank"
+                           class="btn btn-success btn-sm pt-0 pb-0 me-1">Открыть дело</a>
+                        <a th:href="'/person/' + ${el.id}" type="button"
+                           class="btn btn-success btn-sm d-flex align-items-center"
+                           data-bs-toggle="modal" data-bs-target="#personAdd"
+                           th:data-person-id="${el?.id}"
+                           th:data-person-last-name="${el?.lastName}"
+                           th:data-person-first-name="${el?.firstName}"
+                           th:data-person-middle-name="${el?.middleName}"
+                           th:data-person-social-namber="${el?.socialNumber}"
+                           th:data-person-date-of-birthday="${el?.dateOfBirthday}"
+                           title="Редактировать запись">
+                            <i class="fa-solid fa-file-pen"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <th class="input">GUID</th>
+                <th class="input">дате создания</th>
+                <th class="input">СНИЛС</th>
+                <th class="input">фамилии</th>
+                <th class="input">имени</th>
+                <th class="input">отчеству</th>
+                <th class="input">дате рождения</th>
+                <th class="input">статусу</th>
+                <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                               id="btn-search-clear" value="Очистить поиск" style="width: 100%;"></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <form class="row" method="post" action="/person">
+        <div class="modal fade" id="personAdd" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Данные о человеке</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center">
+                        <div style="width: 90%">
+                            <div class="row">
+                                <input type="text" name="personId" id="personId" style="display:none">
+                                <input type="text" placeholder="Фамилия" name="lastName" class="form-control ms-3"
+                                       style="width: 180px;" id="lastNameField" disabled required tabindex="2">
+                                <input type="text" placeholder="Имя" name="firstName" class="form-control ms-3"
+                                       style="width: 180px;" id="firstNameField" disabled required tabindex="3">
+                                <input type="text" placeholder="Отчество" disabled name="middleName"
+                                       class="form-control ms-3"
+                                       style="width: 180px;" id="middleNameField" tabindex="4">
+                                <div class="w-100 mb-3"></div>
+                                <input type="text" placeholder="СНИЛС" name="socialNumber"
+                                       class="form-control social-number ms-3" style="width: 180px;"
+                                       id="socialNumberField" required tabindex="1">
+                                <input type="text" placeholder="Дата рождения" disabled name="birthday"
+                                       class="form-control ms-3"
+                                       style="width: 180px;" onfocus="(this.type='date')" onblur="(this.type='text')"
+                                       id="dateOfBirthdayField" required tabindex="5">
+                                <div class="w-100 mb-1"></div>
+                                <p class="error mt-0 mb-0 ms-1" id="modalFormErrorMessage" disabled></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="btn-modal-exit" tabindex="7">
+                            Закрыть
+                        </button>
+                        <button type="submit" class="btn btn-success" tabindex="6">Сохранить изменения</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/inputmask/jquery.inputmask.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap5.min.js"></script>
+
+</body>
+</html>
+
+
+<script>
+        // получим модальное окно
+        const elemModal = document.querySelector('#personAdd');
+        // срабатывает сразу после вызова метода show модального окна
+        elemModal.addEventListener('show.bs.modal', function (e) {
+            var personId = $(e.relatedTarget).data('person-id');
+            var lastName = $(e.relatedTarget).data('person-last-name');
+            var firstName = $(e.relatedTarget).data('person-first-name');
+            var middleName = $(e.relatedTarget).data('person-middle-name');
+            var socialNumber = $(e.relatedTarget).data('person-social-namber');
+            var dateOfBirthday = $(e.relatedTarget).data('person-date-of-birthday');
+
+            $('#personId').val(personId);
+            $('#lastNameField').val(lastName);
+            $('#firstNameField').val(firstName);
+            $('#middleNameField').val(middleName);
+            $('#socialNumberField').val(socialNumber);
+            $('#dateOfBirthdayField').val(dateOfBirthday);
+
+
+            if ($('#lastNameField').val() != null && $('#lastNameField').val() != "") {
+                $('#lastNameField').prop('disabled', false);
+            }
+            if ($('#firstNameField').val() != null && $('#firstNameField').val() != "") {
+                $('#firstNameField').prop('disabled', false);
+            }
+            if ($('#middleNameField').val() != null && $('#middleNameField').val() != "") {
+                $('#middleNameField').prop('disabled', false);
+            }
+            if ($('#dateOfBirthdayField').val() != null && $('#dateOfBirthdayField').val() != "") {
+                $('#dateOfBirthdayField').prop('disabled', false);
+            }
+        });
+
+        // Настройка таблицы
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                orderFixed: [1, 'desk'],
+                "language": {
+                    "lengthMenu": "Показывать по _MENU_ записей",
+                    "info": "Показано _START_ - _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Нет записей",
+                    "emptyTable": "Нет записей",
+                    "search": "Поиск:",
+                    "paginate": {
+                        "first": "Первая",
+                        "last": "Последняя",
+                        "next": "Следующая",
+                        "previous": "Предыдущая"
+                    }
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+
+                ],
+
+                initComplete: function () {
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+
+        // Маска для ввода СНИЛС
+        $(document).ready(function(){
+            $('#socialNumberField').inputmask("999-999-999 99", { autoUnmask: true });
+        });
+
+        $('#socialNumberField').keyup(function () {
+            let len = document.getElementById('socialNumberField').value.length;
+            if (len === 11) {
+                if ($('#socialNumberField').val() == "00000000000" || !validateSnils($('#socialNumberField').val(), "socialNumber")) {
+                    $('#modalFormErrorMessage').text("Введён не корректный СНИЛС.");
+                    $('#modalFormErrorMessage').prop('disabled', false);
+                } else {
+                    $.ajax({
+                        url: 'person/check',
+                        data: ({
+                            socialNumber : $('#socialNumberField').val()
+                        }),
+                        success: function(data) {
+                            var obj = JSON.parse(data);
+                            var date = new Date(obj.dateOfBirthday);
+                            $('#lastNameField').val(obj.lastName);
+                            $('#firstNameField').val(obj.firstName);
+                            $('#middleNameField').val(obj.middleName);
+                            $('#dateOfBirthdayField').val(obj.dateOfBirthday);
+                        }
+                    });
+                    $('#lastNameField').prop('disabled', false);
+                    $('#firstNameField').prop('disabled', false);
+                    $('#middleNameField').prop('disabled', false);
+                    $('#dateOfBirthdayField').prop('disabled', false);
+                }
+            } else {
+                $('#modalFormErrorMessage').text("");
+                $('#modalFormErrorMessage').prop('disabled', true);
+                $('#lastNameField').prop('disabled', true);
+                $('#firstNameField').prop('disabled', true);
+                $('#middleNameField').prop('disabled', true);
+                $('#dateOfBirthdayField').prop('disabled', true);
+            }
+        });
+
+        // Проверка СНИЛС на валидность
+        function validateSnils(snils, error) {
+            var result = false;
+            if (typeof snils === 'number') {
+                snils = snils.toString();
+            } else if (typeof snils !== 'string') {
+                snils = '';
+            }
+            if (!snils.length) {
+                error.code = 1;
+                error.message = 'СНИЛС пуст';
+            } else if (/[^0-9]/.test(snils)) {
+                error.code = 2;
+                error.message = 'СНИЛС может состоять только из цифр';
+            } else if (snils.length !== 11) {
+                error.code = 3;
+                error.message = 'СНИЛС может состоять только из 11 цифр';
+            } else {
+                var sum = 0;
+                for (var i = 0; i < 9; i++) {
+                    sum += parseInt(snils[i]) * (9 - i);
+                }
+                var checkDigit = 0;
+                if (sum < 100) {
+                    checkDigit = sum;
+                } else if (sum > 101) {
+                    checkDigit = parseInt(sum % 101);
+                    if (checkDigit === 100) {
+                        checkDigit = 0;
+                    }
+                }
+                if (checkDigit === parseInt(snils.slice(-2))) {
+                    result = true;
+                } else {
+                    error.code = 4;
+                    error.message = 'Неправильное контрольное число';
+                }
+            }
+            return result;
+        }
+
+        // Добавление в таблицу полей поиска
+        $('#dataTable tfoot .input').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" class="input-search" placeholder="Поиск"  style="box-sizing:border-box;width: 100%"/>');
+        });
+
+        // Очистить поля поиска
+        $('#btn-search-clear').on('click', function () {
+            $('#dataTable tfoot .input-search').val('').change();
+        })
+
+        // Очищаем поля ввода данных при закрытии модального окна
+        $('#btn-modal-exit').on('click', function () {
+            $('#firstNameField').val('');
+            $('#lastNameField').val('');
+            $('#middleNameField').val('');
+            $('#socialNumberField').val('');
+            $('#dateOfBirthdayField').val('');
+            $('#lastNameField').prop('disabled', true);
+            $('#firstNameField').prop('disabled', true);
+            $('#middleNameField').prop('disabled', true);
+            $('#dateOfBirthdayField').prop('disabled', true);
+        })
+
+
+
+
+</script>

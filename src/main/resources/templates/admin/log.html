@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/brands.min.css">
+  <link rel="stylesheet" href="/css/solid.min.css">
+  <link rel="stylesheet" href="/css/dropdown-menu.css">
+  <title>ЭХД ПД</title>
+</head>
+<body>
+<div class="container mb-5">
+  <header th:replace="blocks/header::header"></header>
+  <div class="row row-cols-7 mt-3 ">
+    <div class="col px-0 d-flex justify-content-between">
+      <div>
+        <a href="/admin/" type="button" class="btn btn-success mb-3"><i
+                class="fa-solid fa-user-tie me-2"></i>Главная
+        </a>
+      </div>
+      <div>
+        <a href="/" class="btn btn-success mb-3" type="button">
+          <i class="fa-solid fa-circle-arrow-left"></i>
+          К списку дел
+        </a>
+        <button class="btn btn-success mb-3" onclick="self.close()">
+          <i class="fa-solid fa-circle-xmark me-2"></i>Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <p class="text-center text-uppercase" style="color: #663300"><strong>Администрирование</strong></p>
+  </div>
+  <div class="row">
+    <p class=""><strong>Лог действий пользователей:</strong></p>
+  </div>
+
+  <div class="row">
+    <table id="dataTable" class="table table-striped" style="width:100%">
+      <thead>
+      <tr>
+        <th scope="col">Дата</th>
+        <th scope="col">Действие</th>
+        <th scope="col">Пользователь</th>
+        <th scope="col">Роль пользователя</th>
+        <th scope="col">GUID дела</th>
+        <th scope="col">GUID документа</th>
+        <th scope="col">Тип документа</th>
+        <th scope="col">Уведомление</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="el:${log}">
+        <th class="fw-normal" th:text="${el.date}"></th>
+        <td th:text="${el.action}"></td>
+        <td th:text="${el.userFullName}"></td>
+        <td th:text="${el.userRole}"></td>
+        <td th:text="${el.personCaseId}"></td>
+        <td th:text="${el.documentId}"></td>
+        <td th:text="${el.documentType}"></td>
+        <td th:text="${el.message}"></td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <th class="input">Дата</th>
+        <th class="input">Действие</th>
+        <th class="input">Пользователь</th>
+        <th class="input">Роль пользователя</th>
+        <th class="input">GUID дела</th>
+        <th class="input">GUID документа</th>
+        <th class="input">Тип документа</th>
+        <th class="text-center"><input type="button" class="btn btn-sm btn-outline-success"
+                                       id="btn-search-clear" value="Очистить поиск" style="width: 100%;"></th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+</div>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap5.min.js"></script>
+
+</body>
+</html>
+
+<script>
+        // Настройка таблицы
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                orderFixed: [1, 'desk'],
+                "language": {
+                    "lengthMenu": "Показывать по _MENU_ записей",
+                    "info": "Показано _START_ - _END_ из _TOTAL_ записей",
+                    "infoEmpty": "Нет записей",
+                    "emptyTable": "Нет записей",
+                    "search": "Поиск:",
+                    "paginate": {
+                        "first": "Первая",
+                        "last": "Последняя",
+                        "next": "Следующая",
+                        "previous": "Предыдущая"
+                    }
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell',
+                    },
+
+                ],
+
+                initComplete: function () {
+                    this.api()
+                        .columns()
+                        .every(function () {
+                            var that = this;
+
+                            $('input', this.footer()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that.search(this.value).draw();
+                                }
+                            });
+                        });
+                },
+            });
+        });
+
+        // Добавление в таблицу полей поиска
+        $('#dataTable tfoot .input').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" class="input-search" placeholder="Поиск"  style="box-sizing:border-box;width: 100%"/>');
+        });
+
+        // Очистить поля поиска
+        $('#btn-search-clear').on('click', function () {
+            $('#dataTable tfoot .input-search').val('').change();
+        })
+
+</script>

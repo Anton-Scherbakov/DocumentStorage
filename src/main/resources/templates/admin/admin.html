@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/brands.min.css">
+    <link rel="stylesheet" href="/css/solid.min.css">
+    <link rel="stylesheet" href="/css/dropdown-menu.css">
+    <title>ЭХД ПД</title>
+</head>
+<body>
+<div class="container mb-5">
+    <header th:replace="blocks/header::header"></header>
+    <div class="row row-cols-7 mt-3 ">
+        <div class="col px-0 d-flex justify-content-between">
+            <div>
+                <button class="btn btn-secondary mb-3"><i
+                        class="fa-solid fa-user-tie me-2"></i>Главная
+                </button>
+            </div>
+            <div>
+                <a href="/" class="btn btn-success mb-3" type="button">
+                    <i class="fa-solid fa-circle-arrow-left"></i>
+                    К списку дел
+                </a>
+                <button class="btn btn-success mb-3" onclick="self.close()">
+                    <i class="fa-solid fa-circle-xmark me-2"></i>Закрыть
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <p class="text-center text-uppercase" style="color: #663300"><strong>Администрирование</strong></p>
+    </div>
+    <div class="row">
+        <p class=""><strong>Загрузка справочника персональных данных:</strong></p>
+        <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form" class="border p-2 rounded">
+            <div class="input-group">
+                <input class="form-control" type="file" id="formFile" name="uploadFile" aria-describedby="basic-addon2"
+                       accept=".csv" required>
+                <div class="input-group-append ms-3">
+                    <button class="btn btn-outline-success" id="upload-btn">
+                        <i class="fa-solid fa-upload"></i>
+                        Загрузить
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex align-items-center mt-1 col-5">
+                <span class="">Разделитель:</span>
+                <select class="form-select form-select-sm ms-2" id="documentSeparator" name="documentSeparator"
+                        required>
+                    <option th:value="';'" th:text="';'"></option>
+                    <option th:value="':'" th:text="':'"></option>
+                    <option th:value="'-'" th:text="'-'"></option>
+                    <option th:value="'|'" th:text="'|'"></option>
+                </select>
+                <span class="ms-2">кодировка:</span>
+                <select class="form-select form-select-sm ms-2" id="documentEncoding" name="documentEncoding"
+                        required>
+                    <option th:value="Windows-1251" th:text="Windows-1251"></option>
+                    <option th:value="UTF-8" th:text="UTF-8"></option>
+                </select>
+            </div>
+        </form>
+        <div id="pb"></div>
+    </div>
+
+    <div class="row mt-4">
+        <p class=""><strong>Редактирование справочников:</strong></p>
+        <div class="row row-cols-1 row-cols-md-4">
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-users-line fa-1x"></i>
+                            Специалисты
+                        </h5>
+                        <p class="card-text">Добавление и редактирование данных по специалистам.</p>
+
+                    </div>
+                    <div class="card-footer">
+                        <a href="/admin/users" class="btn btn-outline-secondary">Начать!</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-braille"></i>
+                            Структурные подразделения
+                        </h5>
+                        <p class="card-text">Добавление и редактирование данных по структурным подразделениям.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-outline-secondary">Начать!</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            Территориальные органы
+                        </h5>
+                        <p class="card-text">Добавление и редактирование данных по территориальным органам.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-outline-secondary">Начать!</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <p class=""><strong>Дополнительная информация:</strong></p>
+        <div class="row row-cols-1 row-cols-md-4">
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-eye"></i>
+                            Логирование
+                        </h5>
+                        <p class="card-text">Просмотреть лог действий специалистов.</p>
+
+                    </div>
+                    <div class="card-footer">
+                        <a href="/log" class="btn btn-outline-success">Перейти!</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-file-lines"></i>
+                            Отчёт "пустые"
+                        </h5>
+                        <p class="card-text">Сформировать список пустых дел.</p>
+
+                    </div>
+                    <div class="card-footer">
+                        <a href="/download/empty-case" class="btn btn-outline-success">Сформировать!</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-uppercase">
+                            <i class="fa-solid fa-file-lines"></i>
+                            Отчёт "двойники"
+                        </h5>
+                        <p class="card-text">Сформировать список двойников по ФИО и дате рождения.</p>
+
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-outline-secondary">Сформировать!</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script src="/js/jquery-3.6.0.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/dataTables.bootstrap5.min.js"></script>
+
+</body>
+</html>
+
+<script>
+
+    $('#upload-btn').click(function () {
+        var progress = '<progress class="progressbar" style="width: 100%"></progress>';
+        $('#pb').append(progress);
+       // $('#upload-form').submit();
+    });
+
+    //$.ajax({
+    //    url: "upload",
+    //    data: ({
+    //        documentSeparator : $('#documentSeparator').val(),
+    //        documentEncoding : $('#documentEncoding').val(),
+    //        uploadFile : $('#formFile').val();
+    //    }),
+    //    success: function(data) {
+    //        $('#pb').remove(progress);
+    //        alert("Данные загружены.")
+    //    }
+    //});
+
+
+</script>
