@@ -465,23 +465,23 @@
                         <div style="width: 90%">
                             <div class="row">
                                 <div style="width: 100%; padding: 0;">
-                                    <!--                                     th:field="*{documentType}"-->
-                                    <div>
-                                        <select class="js-chosen chosen-cln" id="documentType" name="documentType"
-                                                data-placeholder="Выберите тип документа..."
-                                                required>
-                                            <option value=""></option>
-                                            <option th:each="el:${documentType}" th:value="${el.id}"
-                                                    th:text="${el.name}"></option>
-                                        </select>
-                                    </div>
                                     <!--                                    <span class="error" th:if="${#fields.hasErrors('documentType')}">Не выбран тип документа!</span>-->
-                                    <div class="mt-2">
+                                    <div>
                                         <select class="js-chosen chosen-cln" id="documentPurpose" name="documentPurpose"
                                                 data-placeholder="Выберите цель обращения..."
                                                 required>
                                             <option value=""></option>
                                             <option th:each="el:${appealPurpose}" th:value="${el.id}"
+                                                    th:text="${el.name}"></option>
+                                        </select>
+                                    </div>
+                                    <!--                                     th:field="*{documentType}"-->
+                                    <div class="mt-2">
+                                        <select class="js-chosen chosen-cln" id="documentType" name="documentType"
+                                                data-placeholder="Выберите тип документа..."
+                                                required>
+                                            <option value=""></option>
+                                            <option th:each="el:${documentType}" th:value="${el.id}"
                                                     th:text="${el.name}"></option>
                                         </select>
                                     </div>

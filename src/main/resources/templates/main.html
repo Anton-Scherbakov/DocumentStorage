@@ -230,7 +230,7 @@
             let len = document.getElementById('socialNumberField').value.length;
             if (len === 11) {
                 if ($('#socialNumberField').val() == "00000000000" || !validateSnils($('#socialNumberField').val(), "socialNumber")) {
-                    $('#modalFormErrorMessage').text("Введён не корректный СНИЛС.");
+                    $('#modalFormErrorMessage').text("Введён некорректный СНИЛС.");
                     $('#modalFormErrorMessage').prop('disabled', false);
                 } else {
                     $.ajax({

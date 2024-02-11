@@ -69,7 +69,12 @@ public class AdminController {
         model.addAttribute("users", users);
         return "admin/users";
     }
-
+    @GetMapping("/admin/user")
+    public String userAdd(Model model) {
+        Iterable<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin/users";
+    }
     @GetMapping("/download/empty-case")
     public ResponseEntity<byte[]> downloadEmptyCase() {
         String filename = LocalDate.now().toString() + " список пустых дел.csv";

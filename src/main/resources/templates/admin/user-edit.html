@@ -22,7 +22,7 @@
         <a href="/admin/" type="button" class="btn btn-success mb-3"><i
                 class="fa-solid fa-user-tie me-2"></i>Главная
         </a>
-        <a href="/admin/user" type="button" class="btn btn-success mb-3"><i
+        <a href="#" type="button" class="btn btn-success mb-3"><i
                 class="fa-solid fa-id-card me-2"></i>Добавить пользователя
         </a>
       </div>
@@ -44,59 +44,107 @@
     <p class=""><strong>Специалисты:</strong></p>
   </div>
 
-  <div class="row">
-    <table id="dataTable" class="table table-striped" style="width:100%">
-      <thead>
-      <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Фамилия</th>
-        <th scope="col">Имя</th>
-        <th scope="col">Отчество</th>
-        <th scope="col">Роль</th>
-        <th scope="col">Имя пользователя</th>
-        <th scope="col">Териториальный орган</th>
-        <th scope="col">Структурное подразделение</th>
-        <th scope="col">Дейвие</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="el:${users}">
-        <th class="fw-normal" th:text="${el.id}"></th>
-        <td th:text="${el.lastName}"></td>
-        <td th:text="${el.firstName}"></td>
-        <td th:text="${el.middleName}"></td>
-        <td th:text="${el.role.getName}"></td>
-        <td th:text="${el.username}"></td>
-        <td th:text="${el.location.getName}"></td>
-        <td th:text="${el.structuralDivision.getName}"></td>
-        <td>
-          <div class="d-flex">
-            <a class="btn btn-sm btn-success" th:href="'/admin/user/' + ${el.id}" title="Редактировать пользователя"><i class="fa-regular fa-pen-to-square"></i></a>
-            <div th:switch="${el.active}" class="ms-1">
-              <button th:case="1" class="btn btn-sm btn-warning" title="Заблокировать пользователя" th:attr="onclick=|userBlocked(${el.id})|"><i class="fa-solid fa-user-lock"></i></button>
-              <button th:case="0" class="btn btn-sm btn-warning" title="Разблокировать пользователя" th:attr="onclick=|userBlocked(${el.id})"><i class="fa-solid fa-lock-open"></i></button>
+    <div class="row mt-3">
+      <div class="col-sm-9">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Данные пользователя</h5>
+            <div class="row">
+              <div class="col-4">
+                Имя пользователя (login)
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1" style="display: flex;">
+              <div class="col-4">
+                Пароль
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" id="inputPassword"/>
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Фамилия
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Имя
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Отчество
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Роль
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                E-Mail
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Локация
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-4">
+                Структурное подразделение
+              </div>
+              <div class="col">
+                <input type="text" class="w-100" />
+              </div>
+            </div>
+            <hr>
+            <div class="row mt-1">
+              <div class="col">
+                <input type="checkbox" id="userLock">
+                <label for="userLock">Заблокирован</label>
+              </div>
             </div>
           </div>
-        </td>
-      </tr>
-      </tbody>
-      <tfoot>
-      <tr>
-        <th class="input">ID</th>
-        <th class="input">Фамилия</th>
-        <th class="input">Имя</th>
-        <th class="input">Отчество</th>
-        <th class="input">Роль</th>
-        <th class="input">Имя пользователя</th>
-        <th class="input">Териториальный орган</th>
-        <th class="input">Структурное подразделение</th>
-        <th class="text-center">
-          <input type="button" class="btn btn-sm btn-outline-success"
-                                       id="btn-search-clear" value="Очистить поиск" style="width: 100%;">
-        </th>
-      </tr>
-      </tfoot>
-    </table>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Меню</h5>
+                <bytton class="btn btn-outline-success w-100" id="btnSave"><i class="fa-regular fa-floppy-disk me-1"></i>Сохранить</bytton>
+                <!--<bytton class="btn btn-outline-danger mt-1 w-100" id="btnSave"><i class="fa-regular fa-key me-1"></i>Сменить пароль</bytton>-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
